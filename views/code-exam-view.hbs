@@ -1,0 +1,1469 @@
+{{!-- Code snippets taken from CS230 L22 Lessons 01-05 and modified for the purpose of the brief  --}}
+{{!-- jquery 3.5.1 and bootstrap were used --}}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Exam</title>
+    <link href="/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/css/all.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+    <div class="container-fluid">
+        <h2><a class="breadcrumb-item text-dark" href="/">Client Relationship Management</a></h2>
+        <br/>
+        <h3>Therapist Information</h3>
+
+        {{!-- Live therapist filter--}}
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="inputGroupSelect01"><i class="fa fa-search"></i></label>
+            </div>
+            <input class="form-control py-2 border-left-0 border" type="search" placeholder="Filter therapist list by first name ..." id="tableFilter"> 
+        </div>
+
+        <!-- Therapist Table -->
+        <table class="table table-hover table-striped" id="therapistsList">
+        <thead>
+            <tr>  
+            <th style="width: 12.5%">Title</th>
+            <th style="width: 12.5%">First Name</th>
+            <th style="width: 12.5%">Surname</th>
+            <th style="width: 12.5%">Mobile</th>
+            <th style="width: 12.5%">Home Phone</th>
+            <th style="width: 12.5%">Email</th>
+            <th style="width: 12.5%">Address</th>
+            <th class="text-right" style="width: 12.5%">Options</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each therapists}} <!-- iterate through each therapist in the database and put into a table -->
+            <tr >
+            <td style="width: 12.5%">{{title}}</td>
+            <td style="width: 12.5%">{{fname}}</td>
+            <td style="width: 12.5%">{{surname}}</td>
+            <td style="width: 12.5%">{{mobile}}</td>
+            <td style="width: 12.5%">{{homePhone}}</td>
+            <td style="width: 12.5%">{{email}}</td>
+            <td style="width: 12.5%">{{address.addressLine1}},<br>{{address.addressLine2}},<br>{{address.town}},<br>{{address.county}},<br>{{address.eircode}}</td>
+            <td class="text-right" style="width: 12.5%">
+                <a href="javascript:void(0);" class="btn btn-sm btn-info update" 
+                data-id="{{ id }}" data-title="{{ title }}" data-fname="{{ fname }}" data-surname="{{ surname }}" data-mobile="{{ mobile }}" data-homephone="{{ homePhone }}" data-email="{{ email }}"
+                data-addressline1="{{ address.addressLine1 }}" data-addressline2="{{ address.addressLine2 }}" data-town="{{ address.town }}" data-county="{{ address.county }}" data-eircode="{{ address.eircode }}">Update</a>
+                <a href="javascript:void(0);" class="btn btn-sm btn-danger delete" 
+                data-id="{{ id }}" data-title="{{ title }}" data-fname="{{ fname }}" data-surname="{{ surname }}" data-mobile="{{ mobile }}" data-homephone="{{ homePhone }}" data-email="{{ email }}"
+                data-addressline1="{{ address.addressLine1 }}" data-addressline2="{{ address.addressLine2 }}" data-town="{{ address.town }}" data-county="{{ address.county }}" data-eircode="{{ address.eircode }}">Delete</a>
+            </td>
+            </tr>
+            {{/each}}
+        </tbody>
+        </table>
+         
+        <!-- Database Search Therapists -->
+        <div class="input-group mb-3">
+            <!-- Add Therapist Button  -->
+            <button class="btn btn-primary mr-5" data-toggle="modal" data-target="#addTherapistModal">Add</button>
+            <input class="form-control py-2 border" type="search" placeholder="Find therapist by first name ..." id="databaseSearchFilter"> 
+            <div class="input-group-append">
+                <button class="btn btn-success" type="button" id="databaseSearch">Find</button>
+            </div>
+        </div>   
+        
+        <!-- Modal Add Therapist-->
+        <form id="addTherapistForm" action="/therapists" method="POST">
+            <div class="modal fade" id="addTherapistModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add New Therapist</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                    <div><strong>Personal</strong></div>
+                    <div class="form-group">
+                        <input type="text" id="title-therapist" class="form-control" placeholder="Title" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="fname-therapist" class="form-control" placeholder="First Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="surname-therapist" class="form-control" placeholder="Surname" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="mobile-therapist" class="form-control" placeholder="Mobile Phone" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="homePhone-therapist" class="form-control" placeholder="Home Phone" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="email-therapist" class="form-control" placeholder="Email Address" required>
+                    </div>
+                    <div><strong>Address</strong></div>
+                    <div class="form-group">
+                        <input type="text" id="addressLine1-therapist" class="form-control" placeholder="Address Line 1" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="addressLine2-therapist" class="form-control" placeholder="Address Line 2" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="town-therapist" class="form-control" placeholder="Town" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="county-therapist" class="form-control" placeholder="County" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="eircode-therapist" class="form-control" placeholder="Eircode" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+            </div>
+            </div>
+        </form>
+
+        <!-- Modal Update Therapist-->
+        <form id="updateTherapistForm" action="/therapists" method="PUT">
+        <div class="modal fade" id="updateTherapistModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Update Therapist Information</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                <div><strong>Personal</strong></div>
+                    <div class="form-group">
+                        <input type="text" id="update-title-therapist" class="form-control" placeholder="Title" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="update-fname-therapist" class="form-control" placeholder="First Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="update-surname-therapist" class="form-control" placeholder="Surname" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="update-mobile-therapist" class="form-control" placeholder="Mobile Phone" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="update-homePhone-therapist" class="form-control" placeholder="Home Phone" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="update-email-therapist" class="form-control" placeholder="Email Address" required>
+                    </div>
+                    <div><strong>Address</strong></div>
+                    <div class="form-group">
+                        <input type="text" id="update-addressLine1-therapist" class="form-control" placeholder="Address Line 1" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="update-addressLine2-therapist" class="form-control" placeholder="Address Line 2" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="update-town-therapist" class="form-control" placeholder="Town" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="update-county-therapist" class="form-control" placeholder="County" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="update-eircode-therapist" class="form-control" placeholder="Eircode" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                <input type="hidden" name="therapistID" id="update-id-therapist" class="id">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+            </div>
+            </div>
+        </div>
+        </form>
+
+        <!-- Modal Delete Therapist-->
+        <form id="deleteTherapistForm" action="/therapists" method="DELETE"> 
+            <div class="modal fade" id="deleteTherapistModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                            <h5 class="modal-title" id="myModalLabel">Delete Therapist</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                            <strong>Are you sure you want to delete this Therapist?</strong>
+                    </div>
+                    <div class="modal-footer">
+                            <input type="hidden" name="therapistID" id="delete-id-therapist" class="form-control id" required>
+                            <button type="submit" class="btn btn-success">Delete</button>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <br><br>
+        {{!-- Clients table --}}
+        <h3>Client Information</h3>
+
+        {{!-- Live Search Bar --}}
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="inputGroupSelect01"><i class="fa fa-search"></i></label>
+            </div>
+            <input class="form-control py-2 border-left-0 border" type="search" placeholder="Filter client list by first name ..." id="tableFilterClient"> 
+        </div>
+        <!-- Clients Table -->
+        <table class="table table-hover table-striped" id="clientsList">
+        <thead>
+            <tr>  
+            <th style="width: 12.5%">Title</th>
+            <th style="width: 12.5%">First Name</th>
+            <th style="width: 12.5%">Surname</th>
+            <th style="width: 12.5%">Mobile</th>
+            <th style="width: 12.5%">Home Phone</th>
+            <th style="width: 12.5%">Email</th>
+            <th style="width: 12.5%">Address</th>
+            <th class="text-right" style="width: 7.5%">Options</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each clients}} <!-- iterate through each client in the database and put into a table -->
+            <tr >
+            <td style="width: 12.5%">{{title}}</td>
+            <td style="width: 12.5%">{{fname}}</td>
+            <td style="width: 12.5%">{{surname}}</td>
+            <td style="width: 12.5%">{{mobile}}</td>
+            <td style="width: 12.5%">{{homePhone}}</td>
+            <td style="width: 12.5%">{{email}}</td>
+            <td style="width: 12.5%">{{address.addressLine1}},<br>{{address.addressLine2}},<br>{{address.town}},<br>{{address.county}},<br>{{address.eircode}}</td>
+            <td class="text-right" style="width: 12.5%">
+                <a href="javascript:void(0);" class="btn btn-sm btn-info update" 
+                data-id="{{ id }}" data-title="{{ title }}" data-fname="{{ fname }}" data-surname="{{ surname }}" data-mobile="{{ mobile }}" data-homephone="{{ homePhone }}" data-email="{{ email }}"
+                data-addressline1="{{ address.addressLine1 }}" data-addressline2="{{ address.addressLine2 }}" data-town="{{ address.town }}" data-county="{{ address.county }}" data-eircode="{{ address.eircode }}"
+                data-dob="{{ dob }}" data-parentorguardian="{{ parentOrGuardian }}" data-referredby="{{ referredBy }}" data-mobilepermission="{{ permissions.mobilePermission }}" data-emailpermission="{{ permissions.emailPermission }}"
+                data-homephonepermission="{{ permissions.homePhonePermission }}" data-nevermarried="{{ maritalStatus.neverMarried }}" data-domestic="{{ maritalStatus.domestic }}" data-married="{{ maritalStatus.married }}"
+                data-seperated="{{ maritalStatus.seperated }}" data-divorced="{{ maritalStatus.divorced }}" data-widowed="{{ maritalStatus.widowed }}">Update</a>
+                <a href="javascript:void(0);" class="btn btn-sm btn-danger delete" 
+                data-id="{{ id }}" data-title="{{ title }}" data-fname="{{ fname }}" data-surname="{{ surname }}" data-mobile="{{ mobile }}" data-homephone="{{ homePhone }}" data-email="{{ email }}"
+                data-addressline1="{{ address.addressLine1 }}" data-addressline2="{{ address.addressLine2 }}" data-town="{{ address.town }}" data-county="{{ address.county }}" data-eircode="{{ address.eircode }}"
+                data-dob="{{ dob }}" data-parentorguardian="{{ parentOrGuardian }}" data-referredby="{{ referredBy }}" data-mobilepermission="{{ permissions.mobilePermission }}" data-emailpermission="{{ permissions.emailPermission }}"
+                data-homephonepermission="{{ permissions.homePhonePermission }}" data-nevermarried="{{ maritalStatus.neverMarried }}" data-domestic="{{ maritalStatus.domestic }}" data-married="{{ maritalStatus.married }}"
+                data-seperated="{{ maritalStatus.seperated }}" data-divorced="{{ maritalStatus.divorced }}" data-widowed="{{ maritalStatus.widowed }}">Delete</a>
+                <a href="javascript:void(0);" class="btn btn-sm btn-warning info" data-dob="{{ dob }}" data-parentorguardian="{{ parentOrGuardian }}" data-referredby="{{ referredBy }}" data-mobilepermission="{{ permissions.mobilePermission }}" data-emailpermission="{{ permissions.emailPermission }}"
+                data-homephonepermission="{{ permissions.homePhonePermission }}" data-nevermarried="{{ maritalStatus.neverMarried }}" data-domestic="{{ maritalStatus.domestic }}" data-married="{{ maritalStatus.married }}"
+                data-seperated="{{ maritalStatus.seperated }}" data-divorced="{{ maritalStatus.divorced }}" data-widowed="{{ maritalStatus.widowed }}">More Info</a>
+            </td>
+            </tr>
+            {{/each}}
+        </tbody>
+        </table>
+
+        <!-- live filter for clients -->
+        <div class="input-group mb-3">
+            <!-- Add client button  -->
+            <button class="btn btn-primary mr-5" data-toggle="modal" data-target="#addClientModal">Add</button>
+            <input class="form-control py-2 border" type="search" placeholder="Find client by first name ..." id="databaseSearchFilterClient"> 
+            <div class="input-group-append">
+                <button class="btn btn-success" type="button" id="databaseSearchClient">Find</button>
+            </div>
+        </div>  
+
+        <!-- Modal Add Client-->
+        <form id="addClientForm" action="/clients" method="POST">
+            <div class="modal fade" id="addClientModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabelClient">Add New Client</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                    <div><strong>Personal</strong></div>
+                    <div class="form-group">
+                        <input type="text" id="title-client" class="form-control" placeholder="Title" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="fname-client" class="form-control" placeholder="First Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="surname-client" class="form-control" placeholder="Surname" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="mobile-client" class="form-control" placeholder="Mobile Phone" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="homePhone-client" class="form-control" placeholder="Home Phone" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="email-client" class="form-control" placeholder="Email Address" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="dob-client" class="form-control" placeholder="Date of Birth" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="referredBy-client" class="form-control" placeholder="Referred By" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="parentOrGuardian-client" class="form-control" placeholder="Parent or Guardian" required>
+                    </div>
+                    <div><strong>Marital Status</strong></div>
+                     <label class="radio-inline">
+                        <input type="radio" name="radiob" id="neverMarried-client">Never Married
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="radiob" id="domesticPartnership-client">Domestic Partnership
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="radiob" id="married-client">Married
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="radiob" id="seperated-client">Seperated
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="radiob" id="divorced-client">Divorced
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="radiob" id="widowed-client">Widowed
+                    </label>
+                    <div><strong>Contact Permissions</strong></div>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" id="mobilePermission-client">Mobile
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" id="homePhonePermission-client">Home Phone
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" id="emailPermission-client">Email
+                    </label>
+                    <div><strong>Address</strong></div>
+                    <div class="form-group">
+                        <input type="text" id="addressLine1-client" class="form-control" placeholder="Address Line 1" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="addressLine2-client" class="form-control" placeholder="Address Line 2" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="town-client" class="form-control" placeholder="Town" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="county-client" class="form-control" placeholder="County" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="eircode-client" class="form-control" placeholder="Eircode" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+            </div>
+            </div>
+        </form>
+
+        <!-- Modal Update client-->
+        <form id="updateClientForm" action="/clients" method="PUT">
+        <div class="modal fade" id="updateClientModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Update Client Information</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                <div><strong>Personal</strong></div>
+                    <div class="form-group">
+                        <input type="text" id="update-title-client" class="form-control" placeholder="Title" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="update-fname-client" class="form-control" placeholder="First Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="update-surname-client" class="form-control" placeholder="Surname" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="update-mobile-client" class="form-control" placeholder="Mobile Phone" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="update-homePhone-client" class="form-control" placeholder="Home Phone" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="update-email-client" class="form-control" placeholder="Email Address" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="update-dob-client" class="form-control" placeholder="Date of Birth" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="update-referredBy-client" class="form-control" placeholder="Referred By" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="update-parentOrGuardian-client" class="form-control" placeholder="Parent or Guardian" required>
+                    </div>
+                    <div><strong>Marital Status</strong></div>
+                     <label class="radio-inline">
+                        <input type="radio" name="radiob" id="update-neverMarried-client">Never Married
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="radiob" id="update-domesticPartnership-client">Domestic Partnership
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="radiob" id="update-married-client" value="true">Married
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="radiob" id="update-seperated-client">Seperated
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="radiob" id="update-divorced-client">Divorced
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="radiob" id="update-widowed-client">Widowed
+                    </label>
+                    <div><strong>Contact Permissions</strong></div>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" id="update-mobilePermission-client">Mobile
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" id="update-homePhonePermission-client">Home Phone
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" id="update-emailPermission-client">Email
+                    </label>
+                    <div><strong>Address</strong></div>
+                    <div class="form-group">
+                        <input type="text" id="update-addressLine1-client" class="form-control" placeholder="Address Line 1" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="update-addressLine2-client" class="form-control" placeholder="Address Line 2" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="update-town-client" class="form-control" placeholder="Town" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="update-county-client" class="form-control" placeholder="County" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="update-eircode-client" class="form-control" placeholder="Eircode" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                <input type="hidden" name="clientID" id="update-id-client" class="id">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+            </div>
+            </div>
+        </div>
+        </form>
+
+        <!-- Modal Delete Client-->
+        <form id="deleteClientForm" action="/clients" method="DELETE"> 
+            <div class="modal fade" id="deleteClientModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                            <h5 class="modal-title" id="myModalLabel">Delete Client</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                            <strong>Are you sure you want to delete this Client?</strong>
+                    </div>
+                    <div class="modal-footer">
+                            <input type="hidden" name="clientID" id="delete-id-client" class="form-control id" required>
+                            <button type="submit" class="btn btn-success">Delete</button>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+
+        <br><br>
+        <h3>Session Information</h3>
+
+        {{!-- live filter sessions --}}
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="inputGroupSelect01"><i class="fa fa-search"></i></label>
+            </div>
+            <input class="form-control py-2 border-left-0 border" type="search" placeholder="Filter session list by session date ..." id="tableFilterSession"> 
+        </div>
+
+        <!-- Sessions Table -->
+        <table class="table table-hover table-striped" id="sessionsList">
+        <thead>
+            <tr>  
+            <th style="width: 8%">Session Date</th>
+            <th style="width: 8%">Session Time</th>
+            <th style="width: 8%">Therapist ID</th>
+            <th style="width: 8%">Client ID(s)</th>
+            <th style="width: 8%">Fee</th>
+            <th style="width: 8%">Session Number</th>
+            <th style="width: 8%">Session Duration (mins)</th>
+            <th style="width: 8%">Session Type</th>
+            <th style="width: 8%">Issue Flag</th>
+            <th style="width: 8%">Session Notes</th>
+            <th class="text-right" style="width: 8%">Options</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each sessions}} <!-- iterate through each session in the database and put into a table -->
+            <tr >
+            <td style="width: 8%">{{sessionDate}}</td>
+            <td style="width: 8%">{{sessionTime}}</td>
+            <td style="width: 8%">{{therapistID}}</td>
+            <td style="width: 8%">
+                {{#each clientID}}
+                    {{this}}
+                {{/each}}
+            </td>
+            <td style="width: 8%">{{fee}}</td>
+            <td style="width: 8%">{{sessionNumber}}</td>
+            <td style="width: 8%">{{sessionDuration}}</td>
+            <td style="width: 8%">
+                {{#if sessionType.intake}}
+                    Intake
+                {{/if}}
+                {{#if sessionType.psychotherapy}}
+                    Psychotherapy
+                {{/if}}
+                {{#if sessionType.assessment}}
+                    Assessment
+                {{/if}}
+                {{other}}
+            </td>
+            <td style="width: 8%">
+                {{#if issueFlag}}
+                    Yes
+                {{else}}
+                    No
+                {{/if}}
+            </td>
+            <td style="width: 8%">{{sessionNotes}}</td>
+            <td class="text-right" style="width: 8%">
+                <a href="javascript:void(0);" class="btn btn-sm btn-info update" data-sessiondate="{{sessionDate}}" data-sessiontime="{{sessionTime}}" data-therapistid="{{therapistID}}"
+                data-clientid="{{#each clientID}}{{this}}{{/each}}" data-fee="{{fee}}" data-sessionnumber="{{sessionNumber}}" data-sessionduration="{{sessionDuration}}" data-intake="{{sessionType.intake}}"
+                data-psychotherapy="{{sessionType.psychotherapy}}" data-assessment="{{sessionType.assessment}}" data-other="{{sessionType.other}}" data-issueflag="{{issueFlag}}" data-sessionnotes="{{sessionNotes}}" data-id="{{id}}">Update</a>
+                <a href="javascript:void(0);" class="btn btn-sm btn-danger delete" data-sessiondate="{{sessionDate}}" data-sessiontime="{{sessionTime}}" data-therapistid="{{therapistID}}"
+                data-clientid="{{#each clientID}}{{this}}{{/each}}" data-fee="{{fee}}" data-sessionnumber="{{sessionNumber}}" data-sessionduration="{{sessionDuration}}" data-intake="{{sessionType.intake}}"
+                data-psychotherapy="{{sessionType.psychotherapy}}" data-assessment="{{sessionType.assessment}}" data-other="{{sessionType.other}}"data-issueflag="{{issueFlag}}" data-sessionnotes="{{sessionNotes}}" data-id="{{id}}">Delete</a>
+            </td>
+            </tr>
+            {{/each}}
+        </tbody>
+        </table>
+
+        <!-- Database Search Sessions -->
+        <div class="input-group mb-3">
+            <!-- Add Session Button  -->
+            <button class="btn btn-primary mr-5" data-toggle="modal" data-target="#addSessionModal">Add</button>
+            <input class="form-control py-2 border" type="search" placeholder="Find session by date ..." id="databaseSearchFilterSession"> 
+            <div class="input-group-append">
+                <button class="btn btn-success" type="button" id="databaseSearchSession">Find</button>
+            </div>
+        </div> 
+
+        <!-- Modal Add Session-->
+        <form id="addSessionForm" action="/sessions" method="POST">
+            <div class="modal fade" id="addSessionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabelClient">Add New Session</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input type="text" id="sessionDate" class="form-control" placeholder="Session Date" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="sessionTime" class="form-control" placeholder="Session Time" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="therapistID" class="form-control" placeholder="Therapist ID" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="clientID" class="form-control" placeholder="Client 1" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="clientID_2" class="form-control" placeholder="Client 2 (not required)">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="fee" class="form-control" placeholder="Fee" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="sessionNumber" class="form-control" placeholder="Session Number" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="sessionDuration" class="form-control" placeholder="Session Duration" required>
+                    </div>
+                    <label class="checkbox">
+                        <input type="checkbox" id="issueFlag"> Issue Flag
+                    </lable>
+                    <div class="form-group">
+                        <input type="text" id="sessionNotes" class="form-control" placeholder="Session Notes" required>
+                    </div>
+                    <div><strong>Session Type</strong></div>
+                     <label class="radio-inline">
+                        <input type="radio" name="radiob2" id="intake">Intake
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="radiob2" id="psychotherapy">Psychotherapy
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="radiob2" id="assessment">Assessment
+                    </label>
+                    <div class="form-group">
+                        <input type="text" id="other" class="form-control" placeholder="Other">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+            </div>
+            </div>
+        </form>
+
+        <!-- Modal Update session-->
+        <form id="updateSessionForm" action="/sessions" method="PUT">
+        <div class="modal fade" id="updateSessionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Update Session Information</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input type="text" id="update-sessionDate" class="form-control" placeholder="Session Date" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="update-sessionTime" class="form-control" placeholder="Session Time" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="update-therapistID" class="form-control" placeholder="Therapist ID" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="update-clientID" class="form-control" placeholder="Client 1" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="update-clientID_2" class="form-control" placeholder="Client 2 (not required)">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="update-fee" class="form-control" placeholder="Fee" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="update-sessionNumber" class="form-control" placeholder="Session Number" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="update-sessionDuration" class="form-control" placeholder="Session Duration" required>
+                    </div>
+                    <label class="checkbox">
+                        <input type="checkbox" id="update-issueFlag"> Issue Flag
+                    </lable>
+                    <div class="form-group">
+                        <input type="text" id="update-sessionNotes" class="form-control" placeholder="Session Notes" required>
+                    </div>
+                    <div><strong>Session Type</strong></div>
+                     <label class="radio-inline">
+                        <input type="radio" name="radiob2" id="update-intake">Intake
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="radiob2" id="update-psychotherapy">Psychotherapy
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="radiob2" id="update-assessment">Assessment
+                    </label>
+                    <div class="form-group">
+                        <input type="text" id="update-other" class="form-control" placeholder="Other">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                <input type="hidden" name="sessionID" id="update-id-session" class="id">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+            </div>
+            </div>
+        </div>
+        </form>
+
+        <!-- Modal Delete Session-->
+        <form id="deleteSessionForm" action="/sessions" method="DELETE"> 
+            <div class="modal fade" id="deleteSessionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                            <h5 class="modal-title" id="myModalLabel">Delete Session</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                            <strong>Are you sure you want to delete this Session?</strong>
+                    </div>
+                    <div class="modal-footer">
+                            <input type="hidden" name="sessionID" id="delete-id-session" class="form-control id" required>
+                            <button type="submit" class="btn btn-success">Delete</button>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <br><br><br><br><br>
+
+         <!-- Modal More Info Client-->
+        <form id="moreInfoForm" action="/clients"> 
+            <div class="modal fade" id="moreInfoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                            <h5 class="modal-title" id="myModalLabel">More Information</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <div><strong>Marital Status</strong></div>
+                        <label class="radio-inline">
+                            <input type="radio" name="radiob" id="info-neverMarried-client" disabled>Never Married
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="radiob" id="info-domesticPartnership-client" disabled>Domestic Partnership
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="radiob" id="info-married-client" value="true" disabled>Married
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="radiob" id="info-seperated-client" disabled>Seperated
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="radiob" id="info-divorced-client" disabled>Divorced
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="radiob" id="info-widowed-client" disabled>Widowed
+                        </label><br>
+                        <div><strong>Contact Permissions</strong></div>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="info-mobilePermission-client" disabled>Mobile
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="info-homePhonePermission-client" disabled>Home Phone
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="info-emailPermission-client" disabled>Email
+                        </label><br>
+                        <div><strong>Date of Birth</strong></div>
+                        <div id="info-dob"></div><br>
+                        <div><strong>Parent/Guardian</strong></div>
+                        <div id="info-parentOrGuardian"></div><br>
+                        <div><strong>Referred By</strong></div>
+                        <div id="info-referredBy"></div>
+                    </div>
+                </div>
+            </div>
+        </form>
+</div>
+        <!-- Operation Successful Alert Modal taken from CS230 L22-->
+        <div class="modal fade" id="successAlert" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="alert alert-success" role="alert">
+                    RESTful Operation was <strong>successful</strong> 
+                </div>
+            </div>
+        </div>
+
+        <!-- Operation Unsuccessful Alert Modal taken from CS230 L22-->
+        <div class="modal fade" id="errorAlert" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="alert alert-danger" role="alert">
+                    <strong>Oh No!</strong> RESTful Operation was Unsuccessful!
+                </div>
+            </div>
+        </div>
+
+
+
+    <!-- import jquery and bootstrap libraries -->
+    <script src="/assets/js/jquery-3.5.1.min.js"></script>
+    <script src="/assets/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function(){
+
+            //add therapist functionality
+            var addTherapistForm = $("#addTherapistForm");
+            addTherapistForm.submit(function(e){
+                e.preventDefault(); //prevent handling the normal form submit click
+
+                //put form data into an object
+                var formData = {
+                    title : $('#title-therapist').val(),
+                    fname: $('#fname-therapist').val(),
+                    surname: $('#surname-therapist').val(),
+                    mobile: $('#mobile-therapist').val(),
+                    homePhone: $('#homePhone-therapist').val(),
+                    email: $('#email-therapist').val(),
+                    address: {
+                        addressLine1: $('#addressLine1-therapist').val(),
+                        addressLine2: $('#addressLine2-therapist').val(),
+                        town: $('#town-therapist').val(),
+                        county: $('#county-therapist').val(),
+                        eircode: $('#eircode-therapist').val()
+                    }
+                }
+
+                //ajax call to the api
+                //snippets taken from CS230 L22 Lesson 5
+                $.ajax({
+                    type: addTherapistForm.attr('method'),
+                    url: addTherapistForm.attr('action'),
+                    data: formData,
+                    success: function (data) {
+                        console.log('Update successful!');
+                        // make a timed Bootstrap Alert on Success
+                        // then re-direct to "/"
+                        $('#successAlert').modal('show');
+                        var timer = setTimeout(function() {
+                            $(location).attr('href', '/')
+                        }, 3000);
+                    },
+                    error: function (data) {
+                        console.log('An error occurred.');
+                        console.log(data);
+                        // make a timed Bootstrap Alert on Error
+                        // then re-direct to "/"
+                        $('#errorAlert').modal('show');
+                        var timer = setTimeout(function() {
+                            $(location).attr('href', '/')
+                        }, 3000);
+                    },
+                });
+                $('#addTherapistModal').modal('hide');
+            });
+
+            //Update therapist functionality
+            $('#therapistsList').on('click', '.update', function(){
+                //store all the selected items info and put this info into text boxes as default
+                var therapist_id = $(this).data('id');
+                var therapist_title = $(this).data('title');
+                var therapist_fname = $(this).data('fname');
+                var therapist_surname = $(this).data('surname');
+                var therapist_mobile = $(this).data('mobile');
+                var therapist_homePhone = $(this).data('homephone');
+                var therapist_email = $(this).data('email');
+                var therapist_addressLine1 = $(this).data('addressline1');
+                var therapist_addressLine2 = $(this).data('addressline2');
+                var therapist_town = $(this).data('town');
+                var therapist_county = $(this).data('county');
+                var therapist_eircode = $(this).data('eircode');
+                $('#updateTherapistModal').modal('show');
+                $('#update-title-therapist').val(therapist_title);
+                $('#update-fname-therapist').val(therapist_fname);
+                $('#update-surname-therapist').val(therapist_surname);
+                $('#update-mobile-therapist').val(therapist_mobile);
+                $('#update-homePhone-therapist').val(therapist_homePhone);
+                $('#update-email-therapist').val(therapist_email);
+                $('#update-addressLine1-therapist').val(therapist_addressLine1);
+                $('#update-addressLine2-therapist').val(therapist_addressLine2);
+                $('#update-town-therapist').val(therapist_town);
+                $('#update-county-therapist').val(therapist_county);
+                $('#update-eircode-therapist').val(therapist_eircode); 
+                $('#update-id-therapist').val(therapist_id);
+            });
+
+            var updateTherapistForm = $('#updateTherapistForm');
+            updateTherapistForm.submit(function(e){
+
+                var formData = {
+                    title : $('#update-title-therapist').val(),
+                    fname: $('#update-fname-therapist').val(),
+                    surname: $('#update-surname-therapist').val(),
+                    mobile: $('#update-mobile-therapist').val(),
+                    homePhone: $('#update-homePhone-therapist').val(),
+                    email: $('#update-email-therapist').val(),
+                    address: {
+                        addressLine1: $('#update-addressLine1-therapist').val(),
+                        addressLine2: $('#update-addressLine2-therapist').val(),
+                        town: $('#update-town-therapist').val(),
+                        county: $('#update-county-therapist').val(),
+                        eircode: $('#update-eircode-therapist').val()
+                    }
+                }
+
+                e.preventDefault();
+                var id = updateTherapistForm.find('input[name="therapistID"').val();
+                $.ajax({
+                    type: updateTherapistForm.attr('method'),
+                    url: updateTherapistForm.attr('action')+"/"+id,
+                    data: formData,
+                    success: function (data) {
+                        console.log('Update successful!');
+                        // make a timed Bootstrap Alert on Success
+                        // then re-direct to "/"
+                        $('#successAlert').modal('show');
+                        var timer = setTimeout(function() {
+                            $(location).attr('href', '/')
+                        }, 3000);
+                    },
+                    error: function (data) {
+                        console.log('An error occurred.');
+                        // make a timed Bootstrap Alert on Error
+                        // then re-direct to "/"
+                        $('#errorAlert').modal('show');
+                        var timer = setTimeout(function() {
+                            $(location).attr('href', '/')
+                        }, 3000);
+                    },
+                });
+                $('#updateTherapistModal').modal('hide');
+            });
+
+            //Delete therapist functionality
+            $('#therapistsList').on('click','.delete', function(){
+                var therapist_id = $(this).data('id');
+                var therapist_fname = $(this).data('fname');
+                var therapist_surname = $(this).data('surname');
+                //have a popup that displays the therapists name
+                $("#deleteTherapistModal .modal-body").html("<span class=\"font-weight-bold\">Are you sure you want to delete therapist: </span><span class=\"font-italic\">"+therapist_fname+" "+therapist_surname+"</span><span class=\"font-weight-bold\">?</span>");
+                $('#deleteTherapistModal').modal('show');
+                $('#delete-id-therapist').val(therapist_id);
+            });
+
+            var deleteTherapistForm = $('#deleteTherapistForm');
+            deleteTherapistForm.submit(function(e){
+                e.preventDefault();
+                //get therapist id from table
+                var id = deleteTherapistForm.find('input[name="therapistID"]').val();
+                $.ajax({
+                    type: deleteTherapistForm.attr('method'),
+                    //put the therapist id at the end of the url
+                    url: deleteTherapistForm.attr('action')+"/"+id,
+                    success: function (data) {
+                        console.log('Deletion successful!');
+                        $('#successAlert').modal('show');
+                        var timer = setTimeout(function() {
+                            $(location).attr('href', '/')
+                        }, 3000);
+                    },
+                    error: function (data) {
+                        console.log('An error occurred.');
+                        $('#errorAlert').modal('show');
+                        var timer = setTimeout(function() {
+                            $(location).attr('href', '/')
+                        }, 3000);
+                    },
+                });
+                $('#deleteTherapistModal').modal('hide');
+            });
+
+
+            //Live filter for therapist Functionality
+           $("#tableFilter").keyup(function(){
+                var filter = $(this).val().toUpperCase();
+                $("#therapistsList").find('tr').each(function(rows){
+                    if(rows !== 0){
+                        var row = $(this);
+                        //search the second data column of each row for matching criteria
+                        var searching = row.find("td:first + td").text().toUpperCase();
+                        if(searching.indexOf(filter) != -1){
+                            row.show();
+                        }else{
+                            row.hide();
+                        }
+                    }
+                });
+            });
+
+            //Search database for therapist functionality
+            $("#databaseSearch").on('click', function(){
+                var search = $("#databaseSearchFilter").val()
+                if(search){
+                $(location).attr('href', '/therapists/' + search);
+                }else{
+                $(location).attr('href', '/');
+                }
+            });
+
+            //add client functionality
+            var addClientForm = $("#addClientForm");
+            addClientForm.submit(function(e){
+                e.preventDefault(); //prevent handling the normal form submit click
+
+                //put form data into an object
+                var formData = {
+                    title : $('#title-client').val(),
+                    fname: $('#fname-client').val(),
+                    surname: $('#surname-client').val(),
+                    mobile: $('#mobile-client').val(),
+                    homePhone: $('#homePhone-client').val(),
+                    email: $('#email-client').val(),
+                    dob: $('#dob-client').val(),
+                    parentOrGuardian: $('#parentOrGuardian-client').val(),
+                    referredBy: $('#referredBy-client').val(),
+                    address: {
+                        addressLine1: $('#addressLine1-client').val(),
+                        addressLine2: $('#addressLine2-client').val(),
+                        town: $('#town-client').val(),
+                        county: $('#county-client').val(),
+                        eircode: $('#eircode-client').val()
+                    },
+                    maritalStatus: {
+                        neverMarried: $('#neverMarried-client').prop("checked"), //checks if the checkboxes/ radio buttons are checked
+                        domestic: $('#domesticPartnership-client').prop("checked"),
+                        married: $('#married-client').prop("checked"),
+                        seperated: $('#seperated-client').prop("checked"),
+                        divorced: $('#divorced-client').prop("checked"),
+                        widowed: $('#widowed-client').prop("checked")
+                    },
+                    permissions: {
+                        mobilePermission: $('#mobilePermission-client').prop("checked"),
+                        homePhonePermission: $('#homePhonePermission-client').prop("checked"),
+                        emailPermission: $('#emailPermission-client').prop("checked")
+                    }
+                }
+
+                $.ajax({
+                    type: addClientForm.attr('method'),
+                    url: addClientForm.attr('action'),
+                    data: formData,
+                    success: function (data) {
+                        console.log('Update successful!');
+                        // make a timed Bootstrap Alert on Success
+                        // then re-direct to "/"
+                        $('#successAlert').modal('show');
+                        var timer = setTimeout(function() {
+                            $(location).attr('href', '/')
+                        }, 3000);
+                    },
+                    error: function (data) {
+                        console.log('An error occurred.');
+                        console.log(data);
+                        // make a timed Bootstrap Alert on Error
+                        // then re-direct to "/"
+                        $('#errorAlert').modal('show');
+                        var timer = setTimeout(function() {
+                            $(location).attr('href', '/')
+                        }, 3000);
+                    },
+                });
+                $('#addClientModal').modal('hide');
+            });
+
+            //update client functionality
+            $('#clientsList').on('click', '.update', function(){
+                //store all selected clients info and put this info into text boxes as default
+                var client_id = $(this).data('id');
+                var client_title = $(this).data('title');
+                var client_fname = $(this).data('fname');
+                var client_surname = $(this).data('surname');
+                var client_mobile = $(this).data('mobile');
+                var client_homePhone = $(this).data('homephone');
+                var client_email = $(this).data('email');
+                var client_addressLine1 = $(this).data('addressline1');
+                var client_addressLine2 = $(this).data('addressline2');
+                var client_town = $(this).data('town');
+                var client_county = $(this).data('county');
+                var client_eircode = $(this).data('eircode');
+                var client_dob = $(this).data('dob');
+                var client_referredBy = $(this).data('referredby');
+                var client_parentOrGuardian = $(this).data('parentorguardian');
+                var client_mobilePermission = $(this).data('mobilepermission');
+                var client_homePhonePermission = $(this).data('homephonepermission');
+                var client_emailPermission = $(this).data('emailpermission');
+                var client_neverMarried = $(this).data('nevermarried');
+                var client_domestic= $(this).data('domestic');
+                var client_married = $(this).data('married');
+                var client_seperated = $(this).data('seperated');
+                var client_divorced = $(this).data('divorced');
+                var client_widowed = $(this).data('widowed');
+                $('#updateClientModal').modal('show');
+                $('#update-title-client').val(client_title);
+                $('#update-fname-client').val(client_fname);
+                $('#update-surname-client').val(client_surname);
+                $('#update-mobile-client').val(client_mobile);
+                $('#update-homePhone-client').val(client_homePhone);
+                $('#update-email-client').val(client_email);
+                $('#update-addressLine1-client').val(client_addressLine1);
+                $('#update-addressLine2-client').val(client_addressLine2);
+                $('#update-town-client').val(client_town);
+                $('#update-county-client').val(client_county);
+                $('#update-eircode-client').val(client_eircode);
+                $('#update-dob-client').val(client_dob);
+                $('#update-referredBy-client').val(client_referredBy);
+                $('#update-parentOrGuardian-client').val(client_parentOrGuardian);
+                $('#update-emailPermission-client').prop('checked', client_emailPermission); //if client_emailPermission is true, check the box, if not, leave it unchecked
+                $('#update-mobilePermission-client').prop('checked', client_mobilePermission);
+                $('#update-homePhonePermission-client').prop('checked', client_homePhonePermission);
+                $('#update-neverMarried-client').prop('checked', client_neverMarried);
+                $('#update-domesticPartnership-client').prop('checked', client_domestic);
+                $('#update-married-client').prop('checked', client_married);
+                $('#update-seperated-client').prop('checked', client_seperated);
+                $('#update-divorced-client').prop('checked', client_divorced);
+                $('#update-widowed-client').prop('checked', client_widowed);
+                $('#update-id-client').val(client_id);
+            });
+
+            var updateClientForm = $('#updateClientForm');
+            updateClientForm.submit(function(e){
+                var formData = {
+                    title : $('#update-title-client').val(),
+                    fname: $('#update-fname-client').val(),
+                    surname: $('#update-surname-client').val(),
+                    mobile: $('#update-mobile-client').val(),
+                    homePhone: $('#update-homePhone-client').val(),
+                    email: $('#update-email-client').val(),
+                    dob: $('#update-dob-client').val(),
+                    parentOrGuardian: $('#update-parentOrGuardian-client').val(),
+                    referredBy: $('#update-referredBy-client').val(),
+                    address: {
+                        addressLine1: $('#update-addressLine1-client').val(),
+                        addressLine2: $('#update-addressLine2-client').val(),
+                        town: $('#update-town-client').val(),
+                        county: $('#update-county-client').val(),
+                        eircode: $('#update-eircode-client').val()
+                    },
+                    maritalStatus: {
+                        neverMarried: $('#update-neverMarried-client').prop("checked"),
+                        domestic: $('#update-domesticPartnership-client').prop("checked"),
+                        married: $('#update-married-client').prop("checked"),
+                        seperated: $('#update-seperated-client').prop("checked"),
+                        divorced: $('#update-divorced-client').prop("checked"),
+                        widowed: $('#update-widowed-client').prop("checked")
+                    },
+                    permissions: {
+                        mobilePermission: $('#update-mobilePermission-client').prop("checked"),
+                        homePhonePermission: $('#update-homePhonePermission-client').prop("checked"),
+                        emailPermission: $('#update-emailPermission-client').prop("checked")
+                    }
+                }
+
+                e.preventDefault();
+                var id = updateClientForm.find('input[name="clientID"]').val();
+                console.log(id);
+                $.ajax({
+                    type: updateClientForm.attr('method'),
+                    url: updateClientForm.attr('action')+"/"+id,
+                    data: formData,
+                    success: function (data) {
+                        console.log('Update successful!');
+                        // make a timed Bootstrap Alert on Success
+                        // then re-direct to "/"
+                        $('#successAlert').modal('show');
+                        var timer = setTimeout(function() {
+                            $(location).attr('href', '/')
+                        }, 3000);
+                    },
+                    error: function (data) {
+                        console.log('An error occurred.');
+                        // make a timed Bootstrap Alert on Error
+                        // then re-direct to "/"
+                        $('#errorAlert').modal('show');
+                        var timer = setTimeout(function() {
+                            $(location).attr('href', '/')
+                        }, 3000);
+                    },
+                });
+                $('#updateClientModal').modal('hide');
+            });
+
+            //Delete client functionality
+            $('#clientsList').on('click','.delete', function(){
+                var client_id = $(this).data('id');
+                var client_fname = $(this).data('fname');
+                var client_surname = $(this).data('surname');
+                $("#deleteClientModal .modal-body").html("<span class=\"font-weight-bold\">Are you sure you want to delete client: </span><span class=\"font-italic\">"+client_fname+" "+client_surname+"</span><span class=\"font-weight-bold\">?</span>");
+                $('#deleteClientModal').modal('show');
+                $('#delete-id-client').val(client_id);
+            });
+
+            var deleteClientForm = $('#deleteClientForm');
+            deleteClientForm.submit(function(e){
+                e.preventDefault();
+                //get client id from table
+                var id = deleteClientForm.find('input[name="clientID"]').val();
+                $.ajax({
+                    type: deleteClientForm.attr('method'),
+                    //put the therapist id at the end of the url
+                    url: deleteClientForm.attr('action')+"/"+id,
+                    success: function (data) {
+                        console.log('Deletion successful!');
+                        $('#successAlert').modal('show');
+                        var timer = setTimeout(function() {
+                            $(location).attr('href', '/')
+                        }, 3000);
+                    },
+                    error: function (data) {
+                        console.log('An error occurred.');
+                        $('#errorAlert').modal('show');
+                        var timer = setTimeout(function() {
+                            $(location).attr('href', '/')
+                        }, 3000);
+                    },
+                });
+                $('#deleteClientModal').modal('hide');
+            });
+
+            //Live filter for client functionality
+            $("#tableFilterClient").keyup(function(){
+                var filter = $(this).val().toUpperCase();
+                $("#clientsList").find('tr').each(function(rows){
+                    if(rows !== 0){
+                        var row = $(this);
+                        //search the second data column of each row for matching criteria
+                        var searching = row.find("td:first + td").text().toUpperCase();
+                        if(searching.indexOf(filter) != -1){
+                            row.show();
+                        }else{
+                            row.hide();
+                        }
+                    }
+                });
+            });
+
+            //more info client functionality
+            $('#clientsList').on('click','.info', function(){
+                var client_dob = $(this).data('dob');
+                var client_referredBy = $(this).data('referredby');
+                var client_parentOrGuardian = $(this).data('parentorguardian');
+                var client_mobilePermission = $(this).data('mobilepermission');
+                var client_homePhonePermission = $(this).data('homephonepermission');
+                var client_emailPermission = $(this).data('emailpermission');
+                var client_neverMarried = $(this).data('nevermarried');
+                var client_domestic= $(this).data('domestic');
+                var client_married = $(this).data('married');
+                var client_seperated = $(this).data('seperated');
+                var client_divorced = $(this).data('divorced');
+                var client_widowed = $(this).data('widowed');
+                $('#moreInfoModal').modal('show');
+                $('#info-emailPermission-client').prop('checked', client_emailPermission);
+                $('#info-mobilePermission-client').prop('checked', client_mobilePermission);
+                $('#info-homePhonePermission-client').prop('checked', client_homePhonePermission);
+                $('#info-neverMarried-client').prop('checked', client_neverMarried);
+                $('#info-domesticPartnership-client').prop('checked', client_domestic);
+                $('#info-married-client').prop('checked', client_married);
+                $('#info-seperated-client').prop('checked', client_seperated);
+                $('#info-divorced-client').prop('checked', client_divorced);
+                $('#info-widowed-client').prop('checked', client_widowed);
+                $('#info-dob').html(client_dob);
+                $('#info-referredBy').html(client_referredBy);
+                $('#info-parentOrGuardian').html(client_parentOrGuardian);
+            });
+
+            //Search database for client functionality
+            $("#databaseSearchClient").on('click', function(){
+                var search = $("#databaseSearchFilterClient").val()
+                if(search){
+                $(location).attr('href', '/clients/' + search);
+                }else{
+                $(location).attr('href', '/');
+                }
+            });
+
+            //add session functionality
+            var addSessionForm = $('#addSessionForm');
+            addSessionForm.submit(function(e){
+                e.preventDefault();
+
+                //put form data into an object
+                var formData = {
+                    sessionDate: $('#sessionDate').val(),
+                    sessionTime: $('#sessionTime').val(),
+                    therapistID: $('#therapistID').val(),
+                    clientID: [$('#clientID').val()],
+                    fee: $('#fee').val(),
+                    sessionNumber: $('#sessionNumber').val(),
+                    sessionDuration: $('#sessionDuration').val(),
+                    sessionType: {
+                        intake: $('#intake').prop("checked"),
+                        psychotherapy: $('#psychotherapy').prop("checked"),
+                        assessment: $('#assessment').prop("checked")
+                    },
+                    issueFlag: $('#issueFlag').prop("checked"),
+                    sessionNotes: $('#sessionNotes').val()
+                }
+            
+
+            $.ajax({
+                    type: addSessionForm.attr('method'),
+                    url: addSessionForm.attr('action'),
+                    data: formData,
+                    success: function (data) {
+                        console.log('Update successful!');
+                        // make a timed Bootstrap Alert on Success
+                        // then re-direct to "/"
+                        $('#successAlert').modal('show');
+                        var timer = setTimeout(function() {
+                            $(location).attr('href', '/')
+                        }, 3000);
+                    },
+                    error: function (data) {
+                        console.log('An error occurred.');
+                        console.log(data);
+                        // make a timed Bootstrap Alert on Error
+                        // then re-direct to "/"
+                        $('#errorAlert').modal('show');
+                        var timer = setTimeout(function() {
+                            $(location).attr('href', '/')
+                        }, 300000);
+                    },
+                });
+                $('#addSessionModal').modal('hide');
+            });
+
+            //live filter for sessions
+            $("#tableFilterSession").keyup(function(){
+                var filter = $(this).val().toUpperCase();
+                $("#sessionsList").find('tr').each(function(rows){
+                    if(rows !== 0){
+                        var row = $(this);
+                        //search the second data column of each row for matching criteria
+                        var searching = row.find("td:first").text().toUpperCase();
+                        if(searching.indexOf(filter) != -1){
+                            row.show();
+                        }else{
+                            row.hide();
+                        }
+                    }
+                });
+            });
+
+            //update session functionality
+            $('#sessionsList').on('click', '.update', function(){
+                //store all selected sessions info and put this info into text boxes as default
+                var sessionDate = $(this).data('sessiondate');
+                var sessionTime = $(this).data('sessiontime');
+                var therapistID = $(this).data('therapistid');
+                var clientID = $(this).data('clientid');
+                var fee = $(this).data('fee');
+                var sessionNumber = $(this).data('sessionnumber');
+                var sessionDuration = $(this).data('sessionduration');
+                var intake = $(this).data('intake');
+                var psychotherapy = $(this).data('psychotherapy');
+                var assessment = $(this).data('assessment');
+                var other = $(this).data('other');
+                var issueFlag = $(this).data('issueflag');
+                var sessionNotes = $(this).data('sessionnotes');
+                var sessionID = $(this).data('id');
+                $('#updateSessionModal').modal('show');
+                $('#update-sessionDate').val(sessionDate); 
+                $('#update-sessionTime').val(sessionTime); 
+                $('#update-therapistID').val(therapistID);
+                $('#update-clientID').val(clientID);
+                $('#update-fee').val(fee);
+                $('#update-sessionNumber').val(sessionNumber);
+                $('#update-sessionDuration').val(sessionDuration);
+                $('#update-intake').prop('checked', intake);
+                $('#update-psychotherapy').prop('checked', psychotherapy);
+                $('#update-assessment').prop('checked', assessment);
+                $('#update-issueFlag').prop('checked', issueFlag);
+                $('#update-other').val(other);
+                $('#update-sessionNotes').val(sessionNotes);  
+                $('#update-id-session').val(sessionID); 
+            });
+
+            var updateSessionForm = $('#updateSessionForm');
+            updateSessionForm.submit(function(e){
+                var formData = {
+                    sessionDate: $('#update-sessionDate').val(),
+                    sessionTime: $('#update-sessionTime').val(),
+                    therapistID: $('#update-therapistID').val(),
+                    clientID: [$('#update-clientID').val()],
+                    fee: $('#update-fee').val(),
+                    sessionNumber: $('#update-sessionNumber').val(),
+                    sessionDuration: $('#update-sessionDuration').val(),
+                    sessionType: {
+                        intake: $('#update-intake').prop("checked"),
+                        psychotherapy: $('#update-psychotherapy').prop("checked"),
+                        assessment: $('#update-assessment').prop("checked")
+                    },
+                    issueFlag: $('#update-issueFlag').prop("checked"),
+                    sessionNotes: $('#update-sessionNotes').val()
+                }
+
+                e.preventDefault();
+                var id = updateSessionForm.find('input[name="sessionID"]').val();
+                $.ajax({
+                    type: updateSessionForm.attr('method'),
+                    url: updateSessionForm.attr('action')+"/"+id,
+                    data: formData,
+                    success: function (data) {
+                        console.log('Update successful!');
+                        // make a timed Bootstrap Alert on Success
+                        // then re-direct to "/"
+                        $('#successAlert').modal('show');
+                        var timer = setTimeout(function() {
+                            $(location).attr('href', '/')
+                        }, 3000);
+                    },
+                    error: function (data) {
+                        console.log('An error occurred.');
+                        // make a timed Bootstrap Alert on Error
+                        // then re-direct to "/"
+                        $('#errorAlert').modal('show');
+                        var timer = setTimeout(function() {
+                            $(location).attr('href', '/')
+                        }, 3000);
+                    },
+                });
+                $('#updateSessionModal').modal('hide');
+            });
+
+            //delete session functionality
+            $('#sessionsList').on('click','.delete', function(){
+                var session_id = $(this).data('id');
+                $('#deleteSessionModal').modal('show');
+                $('#delete-id-session').val(session_id);
+            });
+
+            var deleteSessionForm = $('#deleteSessionForm');
+            deleteSessionForm.submit(function(e){
+                e.preventDefault();
+                //get client id from table
+                var id = deleteSessionForm.find('input[name="sessionID"]').val();
+                $.ajax({
+                    type: deleteSessionForm.attr('method'),
+                    //put the therapist id at the end of the url
+                    url: deleteSessionForm.attr('action')+"/"+id,
+                    success: function (data) {
+                        console.log('Deletion successful!');
+                        $('#successAlert').modal('show');
+                        var timer = setTimeout(function() {
+                            $(location).attr('href', '/')
+                        }, 3000);
+                    },
+                    error: function (data) {
+                        console.log('An error occurred.');
+                        $('#errorAlert').modal('show');
+                        var timer = setTimeout(function() {
+                            $(location).attr('href', '/')
+                        }, 3000);
+                    },
+                });
+                $('#deleteSessionModal').modal('hide');
+            });
+
+            //Search database for therapist functionality
+            $("#databaseSearchSession").on('click', function(){
+                var search = $("#databaseSearchFilterSession").val()
+                if(search){
+                $(location).attr('href', '/sessions/' + search);
+                }else{
+                $(location).attr('href', '/');
+                }
+            });
+        });
+    </script>   
+</body>
+</html>
